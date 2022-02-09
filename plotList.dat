@@ -1,0 +1,25 @@
+2 RECO.eTotTS RECO.eTotAllLC3 Def RECOAM.eTotTS RECOAM.eTotAllLC3 EM3 eTot_recoOverAll3 ;E^{tot}_{Reco}/E^{tot}_{AllLC3};Events 26 0. 1.3 1 hist 0
+
+2 RECO.nTotTS 1 Def RECOAM.nTotTS 1 EM3 nTotTS ;nTotTS;Events 10 0 10 1 hist 0
+
+2 RECO.eTS1 RECO.eTotTS Def RECOAM.eTS1 RECOAM.eTotTS EM3 eTS1_recoOverSumTS ;E^{TS1}_{Reco}/E^{tot}_{TS};Events 24 0. 1.2 1 hist 0
+
+2 RECO.eTS2 RECO.eTotTS Def RECOAM.eTS2 RECOAM.eTotTS EM3 eTS2_recoOverSumTS ;E^{TS2}_{Reco}/E^{tot}_{TS};Events 24 0. 1. 1 hist 0
+2 RECO.eTS3 RECO.eTotTS Def RECOAM.eTS3 RECOAM.eTotTS EM3 eTS3_recoOverSumTS ;E^{TS3}_{Reco}/E^{tot}_{TS};Events 24 0. 1. 1 hist 0
+
+2 RECO.deltaEtaTS12 1 Def RECOAM.deltaEtaTS12 1 EM3 deltaEtaTS12 ;DeltaEta(1,2);Events 100 -1 1 1 hist 0
+2 RECO.deltaEtaTS13 1 Def RECOAM.deltaEtaTS13 1 EM3 deltaEtaTS13 ;DeltaEta(1,3);Events 100 -1 1 1 hist 0
+2 RECO.deltaEtaTS23 1 Def RECOAM.deltaEtaTS23 1 EM3 deltaEtaTS23 ;DeltaEta(2,3);Events 100 -1 1 1 hist 0
+
+2 RECO.deltaPhiTS12 1 Def RECOAM.deltaPhiTS12 1 EM3 deltaPhiTS12 ;DeltaPhi(1,2);Events 100 -1 1 1 hist 0
+2 RECO.deltaPhiTS13 1 Def RECOAM.deltaPhiTS13 1 EM3 deltaPhiTS13 ;DeltaPhi(1,3);Events 100 -1 1 1 hist 0
+2 RECO.deltaPhiTS23 1 Def RECOAM.deltaPhiTS23 1 EM3 deltaPhiTS23 ;DeltaPhi(2,3);Events 100 -1 1 1 hist 0
+
+1 #RECO.eTotLC3_ECAL RECO.eTotAllLC3_ECAL eTotECAL_recoOverAll3 ;E^{EE}_{Reco}/E^{EE}_{AllLC3};Events 100 0. 1.1 1 hist 0
+1 #RECO.eTotLC3_FHCAL RECO.eTotAllLC3_FHCAL eTotFHCAL_recoOverAll3 ;E^{FH}_{Reco}/E^{FH}_{AllLC3};Events 100 0. 1.1 1 hist 0
+1 #RECO.eTotLC3_BHCAL RECO.eTotAllLC3_BHCAL eTotBHCAL_recoOverAll3 ;E^{BH}_{Reco}/E^{BH}_{AllLC3};Events 100 0. 1.1 1 hist 0
+
+1 #PURECO.eTotLC3 PURECO.eTotAllLC3 eTotPU_recoOverAll3 ;PUE^{tot}_{Reco}/E^{tot}_{AllLC3};Events 100 0. 1.1 1 hist 0
+1 #PURECO.eTotLC3_ECAL PURECO.eTotAllLC3_ECAL eTotPUECAL_recoOverAll3 ;PUE^{EE}_{Reco}/E^{EE}_{AllLC3};Events 100 0. 1.1 1 hist 0
+1 #PURECO.eTotLC3_FHCAL PURECO.eTotAllLC3_FHCAL eTotPUFHCAL_recoOverAll3 ;PUE^{FH}_{Reco}/E^{FH}_{AllLC3};Events 100 0. 1.1 1 hist 0
+1 #PURECO.eTotLC3_BHCAL PURECO.eTotAllLC3_BHCAL eTotPUBHCAL_recoOverAll3 ;PUE^{BH}_{Reco}/E^{BH}_{AllLC3};Events 100 0. 1.1 1 hist 0
