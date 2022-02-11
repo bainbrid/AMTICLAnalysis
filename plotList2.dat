@@ -1,0 +1,15 @@
+1 RECO.nTotTS 1 nTotTS ;nTotTS;Events 10 0. 10. 0 hist 0
+1 RECO.nTS_EM 1 nTS_EM ;nTS_EM;Events 10 0. 10. 0 hist 0
+1 RECO.nTS_TrkEM 1 nTS_TrkEM ;nTS_TrkEM;Events 10 0. 10. 0 hist 0
+1 RECO.eTotTS 1 eTotTS ;eTotTS;Events 50 0. 500. 0 hist 0
+1 RECO.eTS1 1 eTS1 ;eTS1;Events 50 0. 500. 0 hist 0
+1 RECO.eTS2 1 eTS2 ;eTS2;Events 50 0. 500. 0 hist 0
+1 RECO.deltaRTS12 1 deltaRTS12 ;deltaRTS12;Events 50 0. 1. 0 hist 0
+1 RECO.deltaEtaTS12 1 deltaEtaTS12 ;deltaEtaTS12;Events 50 0. 1. 0 hist 0
+1 RECO.deltaPhiTS12 1 deltaPhiTS12 ;deltaPhiTS12;Events 50 0. 1. 0 hist 0
+1 RECO.eTotLC3 1 eTotLC3 ;eTotLC3;Events 50 0. 500. 0 hist 0
+1 RECO.eTotLC3 1 eTotLC3 ;eTotLC3;Events 50 0. 500. 0 hist 0
+1 RECO.eTotAllLC3 1 eTotAllLC3 ;eTotAllLC3;Events 50 0. 500. 0 hist 0
+1 RECO.deltaRCP12 1 deltaRCP12 ;deltaRCP12;Events 50 0. 1. 0 hist 0
+1 RECO.deltaEtaCP12 1 deltaEtaCP12 ;deltaEtaCP12;Events 50 0. 1. 0 hist 0
+1 RECO.deltaPhiCP12 1 deltaPhiCP12 ;deltaPhiCP12;Events 50 0. 1. 0 hist 0
