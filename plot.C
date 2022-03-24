@@ -499,14 +499,16 @@ int getTree(std::string filePath,
   if (doAMiters && iRegion==4) regs[1] = "_AMiters/ChargedPionsFromVtx";
   
   //@@const unsigned nIter = 7;
-  const unsigned nIter = 5;
+  const unsigned nIter = 2;
   std::string iters[2][nIter] = {
     //{"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"},
     //{"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"}
     //@@{"Sim","TrkEM","EM","Trk","HAD","Dummy1","EM3"},
     //@@{"Sim","TrkEM","EM","Trk","HAD","Dummy1","EM3"}
-    {"TrkEM","EM","Trk","HAD","Sim"},
-    {"TrkEM","EM","Trk","HAD","Sim"}
+    //{"TrkEM","EM","Trk","HAD","Sim"},
+    //{"TrkEM","EM","Trk","HAD","Sim"}
+    {"TrkEM","EM"},
+    {"TrkEM","EM"}
   };
   if (!doAMiters){
     for (unsigned iC(0); iC<nIter;++iC){
@@ -522,7 +524,7 @@ int getTree(std::string filePath,
     for (unsigned iR(0); iR<nRuns; ++iR){
       std::ostringstream infile;
       infile << filePath << regs[iF] << "/";
-      if (filePath.find("FineCalo")!=filePath.npos) infile <<  "FineCalo/";
+      if (filePath.find("FineCalo")!=filePath.npos) infile <<  "FineCalo/current/";
       //@@infile << "step3ticl_" << pteta
       infile << "step3_" << pteta
 	     << "_run" << iR
@@ -539,7 +541,7 @@ int getTree(std::string filePath,
       for (unsigned iR(0); iR<nRuns; ++iR){
 	std::ostringstream infile;
 	infile << filePath << regs[iF] << "/";
-	if (filePath.find("FineCalo")!=filePath.npos) infile <<  "FineCalo/";
+	if (filePath.find("FineCalo")!=filePath.npos) infile <<  "FineCalo/current/";
 	//@@infile << "step3ticl_" << pteta
 	infile << "step3_" << pteta
 	       << "_run" << iR
@@ -649,9 +651,9 @@ int plotSelectionPU(TChain * treeLC,
   SetTdrStyle();
 
   //@@const unsigned nIter = 7;
-  const unsigned nIter = 5;
+  const unsigned nIter = 2;
   //@@std::string iters[nIter] = {"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"};
-  std::string iters[nIter] = {"TrkEM","EM","Trk","Had","Sim"};
+  std::string iters[nIter] = {"TrkEM","EM"};//,"Trk","Had","Sim"};
 
   std::ostringstream lPlotDir;
   lPlotDir << filePath<<"/CompaPU/" << pteta << "/Plots/";//_nL10/";
@@ -876,7 +878,7 @@ int plot(){
   //@@const unsigned nPT = 12;
   const unsigned nPT = 1;
   //@@double ptval[12] = {3,5,10,15,20,30,40,50,75,100,150,200};
-  double ptval[1] = {50};
+  double ptval[1] = {200};//@@{50};
   const unsigned etaval = 21;
 
   for (unsigned ipt(0); ipt<nPT; ++ipt){  

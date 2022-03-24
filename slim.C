@@ -115,10 +115,10 @@ void fillRecoTree(std::string filePath,
   double eTotSimTSLC3_BHCAL;
 
   //@@ const unsigned nIter = 7;
-  const unsigned nIter = 5;
+  const unsigned nIter = 1;
   //std::string iters[nIter] = {"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"};
-  //@@std::string iters[nIter] = {"Sim","TrkEM","EM","Trk","HAD","Dummy1","EM3"};
-  std::string iters[nIter] = {"TrkEM","EM","Trk","HAD","Sim"};
+  //@@std::string iters[nIter] = {"TrkEM","EM"};//@@,"Trk","HAD","Sim"};
+  std::string iters[nIter] = {"EM3"};//@@,"Trk","HAD","Sim"};
   //std::string AMiters[nIter] = {"Sim","TrkEMAM","EMAM","TrkAM","HADAM"};
   std::string AMiters[nIter];
   for (unsigned iI(0); iI<nIter;++iI){
@@ -127,7 +127,7 @@ void fillRecoTree(std::string filePath,
 
   //@@bool skipInSum[nIter] = {true,false,false,false,false,true,true};
   //bool skipInSum[nIter] = {true,false,false,true,true,true,true};
-  bool skipInSum[nIter] = {false,false,false,false,true};
+  bool skipInSum[nIter] = {false};//,false,false};//@@,false,false,true};
   if (doAMsum) {
     skipInSum[1] = true;
     skipInSum[2] = true;
@@ -155,6 +155,10 @@ void fillRecoTree(std::string filePath,
   double deltaRCP12;
   double deltaEtaCP12;
   double deltaPhiCP12;
+
+  double deltaXCP12;
+  double deltaYCP12;
+  double deltaXYCP12;
   
   newTree->Branch("nTotTS",&nTotTS);
   newTree->Branch("eTotTS",&eTotTS);
@@ -205,6 +209,10 @@ void fillRecoTree(std::string filePath,
   newTree->Branch("deltaEtaCP12",&deltaEtaCP12);
   newTree->Branch("deltaPhiCP12",&deltaPhiCP12);
 
+  newTree->Branch("deltaXCP12",&deltaXCP12);
+  newTree->Branch("deltaYCP12",&deltaYCP12);
+  newTree->Branch("deltaXYCP12",&deltaXYCP12);
+
 //@@  for (unsigned iL(0); iL<nL;++iL){
 //@@    std::ostringstream lName;
 //@@    lName << "maxwDeltaR_" << iL+1;
@@ -250,13 +258,13 @@ void fillRecoTree(std::string filePath,
     else tree[iC] = new TChain(("ticlTree/TSTree_"+AMiters[iC]).c_str());
 
     //@@const unsigned nRuns = 10;
-    const unsigned nRuns = 1;
+    const unsigned nRuns = 4;
     for (unsigned iRun(0); iRun<nRuns; ++iRun){
       std::ostringstream label;
       label << filePath << "/" << reg[iR] << "/";
-      if (filePath.find("FineCalo")!=filePath.npos) label << "FineCalo/";
+      if (filePath.find("FineCalo")!=filePath.npos) label << "FineCalo/current/";
       //@@label << "step3ticl_" << pteta << "_run" << iRun << "_FlatTracksters.root";
-      label << "step3_" << pteta << "_run" << iRun << "_FlatTracksters.root";
+      label << "step3ticl_" << pteta << "_run" << iRun << "_FlatTracksters.root";
 
       std::cout << "FILE for iter '" << iters[iC] << "': " << label.str() << std::endl;
       tree[iC]->AddFile(label.str().c_str());
@@ -497,14 +505,55 @@ void fillRecoTree(std::string filePath,
     deltaPhiCP12 = -1;
     deltaEtaCP12 = -1;
     deltaRCP12 = -1;
+    deltaXCP12 = -1;
+    deltaYCP12 = -1;
+    deltaXYCP12 = -1;
     if ( nCP > 1 ) {
       deltaPhiCP12 = abs(deltaPhi((*cp_phi)[0],(*cp_phi)[1]));
       deltaEtaCP12 = abs(deltaEta((*cp_eta)[0],(*cp_eta)[1]));
       deltaRCP12 = deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1]);
-//      std::cout << "DELTA: dP: " << deltaPhi((*cp_phi)[0],(*cp_phi)[1])
-//		<< " dE: " << deltaEta((*cp_eta)[0],(*cp_eta)[1])
-//		<< " dR: " << deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1])
-//		<< std::endl;
+//      std::cout << "DELTA: " << std::endl
+//		<< " dP: " << deltaPhi((*cp_phi)[0],(*cp_phi)[1]) << std::endl
+//		<< " dE: " << deltaEta((*cp_eta)[0],(*cp_eta)[1]) << std::endl
+//		<< " dR: " << deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1]) << std::endl;
+
+      // photons are "PV pointing", uncharged, massless 
+      // no need to extrapolate momentum vector to ECAL surface
+      // simply convert eta / phi 
+      float tmp_theta = (180./3.141)*2.*std::atan(std::exp(-2.44));
+      float cp1_theta = 2.*std::atan(std::exp(-1.*(*cp_eta)[0]));
+      float cp2_theta = 2.*std::atan(std::exp(-1.*(*cp_eta)[1]));
+      float cp1_phi = (*cp_phi)[0];
+      float cp2_phi = (*cp_phi)[1];
+      float cp1_z = 320.;
+      float cp2_z = 320.;
+      float cp1_r = std::tan(cp1_theta)*cp1_z;
+      float cp2_r = std::tan(cp2_theta)*cp2_z;
+      float cp1_x = std::cos(cp1_phi)*cp1_r;
+      float cp2_x = std::cos(cp2_phi)*cp2_r;
+      float cp1_y = std::sin(cp1_phi)*cp1_r;
+      float cp2_y = std::sin(cp2_phi)*cp2_r;
+      float cp12_dx = cp1_x-cp2_x;
+      float cp12_dy = cp1_y-cp2_y;
+      float cp12_dr = std::sqrt(cp12_dx*cp12_dx+cp12_dy*cp12_dy);
+      deltaXCP12 = cp12_dx;
+      deltaYCP12 = cp12_dy;
+      deltaXYCP12 = cp12_dr;
+
+//      std::cout << "DELTA: " << std::endl
+//		<< " cp1_theta: " << cp1_theta << std::endl
+//		<< " cp2_theta: " << cp2_theta << std::endl
+//		<< " cp1_phi:   " << cp1_phi << std::endl
+//		<< " cp2_phi:   " << cp2_phi << std::endl
+//		<< " cp1_z:     " << cp1_z << std::endl
+//		<< " cp2_z:     " << cp2_z << std::endl
+//		<< " cp1_x:     " << cp1_x << std::endl
+//		<< " cp2_x:     " << cp2_x << std::endl
+//		<< " cp1_y:     " << cp1_y << std::endl
+//		<< " cp2_y:     " << cp2_y << std::endl
+//		<< " cp12_dx:   " << cp12_dx << std::endl
+//		<< " cp12_dy:   " << cp12_dy << std::endl
+//		<< " cp12_dr:   " << cp12_dr << std::endl;
     }
     
     std::map<int,int> lSimLC;
@@ -764,7 +813,7 @@ int slim(){
     std::cout << " -- Processing region " << reg[iReg] << std::endl;
     
     //@@ double ptval[12] = {3,5,10,15,20,30,40,50,75,100,150,200};
-    double ptval[1] = {50};
+    double ptval[1] = {200};//@@{50};
     const unsigned nPT = doDebug ? 1 : iReg==4 ? 7 : 12;
     if (iReg==4 || iReg==5){
       ptval[1] = 10;
@@ -781,7 +830,7 @@ int slim(){
     if (iReg!=0) etaval[0] = 21;
     
     if (doDebug) {
-      ptval[0] = 50;
+      ptval[0] = 200;//@@50;
       etaval[0] = 21;
     }
     
