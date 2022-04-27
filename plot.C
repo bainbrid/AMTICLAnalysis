@@ -499,16 +499,10 @@ int getTree(std::string filePath,
   if (doAMiters && iRegion==4) regs[1] = "_AMiters/ChargedPionsFromVtx";
   
   //@@const unsigned nIter = 7;
-  const unsigned nIter = 2;
+  const unsigned nIter = 1;
   std::string iters[2][nIter] = {
-    //{"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"},
-    //{"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"}
-    //@@{"Sim","TrkEM","EM","Trk","HAD","Dummy1","EM3"},
-    //@@{"Sim","TrkEM","EM","Trk","HAD","Dummy1","EM3"}
-    //{"TrkEM","EM","Trk","HAD","Sim"},
-    //{"TrkEM","EM","Trk","HAD","Sim"}
-    {"TrkEM","EM"},
-    {"TrkEM","EM"}
+    {"EM3"}, //{"TrkEM","EM","Trk","HAD","Sim"},
+    {"EM3"}  //{"TrkEM","EM","Trk","HAD","Sim"},
   };
   if (!doAMiters){
     for (unsigned iC(0); iC<nIter;++iC){
@@ -525,8 +519,8 @@ int getTree(std::string filePath,
       std::ostringstream infile;
       infile << filePath << regs[iF] << "/";
       if (filePath.find("FineCalo")!=filePath.npos) infile <<  "FineCalo/current/";
-      //@@infile << "step3ticl_" << pteta
-      infile << "step3_" << pteta
+      infile << "step3ticl_" << pteta
+	//@@infile << "step3_" << pteta
 	     << "_run" << iR
 	     << "_FlatTracksters.root";
       std::cout << "FILE for ticlTree/treeLC: " << infile.str() << std::endl;
@@ -542,8 +536,8 @@ int getTree(std::string filePath,
 	std::ostringstream infile;
 	infile << filePath << regs[iF] << "/";
 	if (filePath.find("FineCalo")!=filePath.npos) infile <<  "FineCalo/current/";
-	//@@infile << "step3ticl_" << pteta
-	infile << "step3_" << pteta
+	infile << "step3ticl_" << pteta
+	  //@@infile << "step3_" << pteta
 	       << "_run" << iR
 	       << "_FlatTracksters.root";
 	std::cout << "FILE for ticlTree/TSTree: " << infile.str() << std::endl;
@@ -651,9 +645,8 @@ int plotSelectionPU(TChain * treeLC,
   SetTdrStyle();
 
   //@@const unsigned nIter = 7;
-  const unsigned nIter = 2;
-  //@@std::string iters[nIter] = {"Sim","TrkEM","EM","Trk","HAD","EMAM","HADAM"};
-  std::string iters[nIter] = {"TrkEM","EM"};//,"Trk","Had","Sim"};
+  const unsigned nIter = 1;
+  std::string iters[nIter] = {"EM3"};//"EM","Trk","Had","Sim","TrkEM",};
 
   std::ostringstream lPlotDir;
   lPlotDir << filePath<<"/CompaPU/" << pteta << "/Plots/";//_nL10/";
@@ -878,7 +871,7 @@ int plot(){
   //@@const unsigned nPT = 12;
   const unsigned nPT = 1;
   //@@double ptval[12] = {3,5,10,15,20,30,40,50,75,100,150,200};
-  double ptval[1] = {200};//@@{50};
+  double ptval[1] = {50};
   const unsigned etaval = 21;
 
   for (unsigned ipt(0); ipt<nPT; ++ipt){  
