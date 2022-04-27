@@ -159,6 +159,10 @@ void fillRecoTree(std::string filePath,
   double deltaXCP12;
   double deltaYCP12;
   double deltaXYCP12;
+  double dist_2d = -1.;
+  double dist_3d = -1.;
+  double dist_old_2d = -1.;
+  double dist_old_3d = -1.;
   
   newTree->Branch("nTotTS",&nTotTS);
   newTree->Branch("eTotTS",&eTotTS);
@@ -212,6 +216,10 @@ void fillRecoTree(std::string filePath,
   newTree->Branch("deltaXCP12",&deltaXCP12);
   newTree->Branch("deltaYCP12",&deltaYCP12);
   newTree->Branch("deltaXYCP12",&deltaXYCP12);
+  newTree->Branch("dist_2d",&dist_2d);
+  newTree->Branch("dist_3d",&dist_3d);
+  newTree->Branch("dist_old_2d",&dist_old_2d);
+  newTree->Branch("dist_old_3d",&dist_old_3d);
 
 //@@  for (unsigned iL(0); iL<nL;++iL){
 //@@    std::ostringstream lName;
@@ -312,19 +320,42 @@ void fillRecoTree(std::string filePath,
   treeLC->SetBranchAddress("all_lc_mult", &all_lc_mult, &b_all_lc_mult);
 
   TBranch        *b_nCP = 0;
+  TBranch        *b_cp_energy = 0;
   TBranch        *b_cp_eta = 0;
   TBranch        *b_cp_phi = 0;
-  TBranch        *b_cp_energy = 0;
+  TBranch        *b_cp_vtxX = 0;
+  TBranch        *b_cp_vtxY = 0;
+  TBranch        *b_cp_vtxZ = 0;
 
   Int_t           nCP = 0;
   vector<double>        *cp_energy = 0;
   vector<double>        *cp_eta = 0;
   vector<double>        *cp_phi = 0;
+  vector<double>        *cp_vtxX = 0;
+  vector<double>        *cp_vtxY = 0;
+  vector<double>        *cp_vtxZ = 0;
 
   tree[0]->SetBranchAddress("nCP", &nCP, &b_nCP);
   tree[0]->SetBranchAddress("cp_energy", &cp_energy, &b_cp_energy);
   tree[0]->SetBranchAddress("cp_eta", &cp_eta, &b_cp_eta);
   tree[0]->SetBranchAddress("cp_phi", &cp_phi, &b_cp_phi);
+  tree[0]->SetBranchAddress("cp_vtxX", &cp_vtxX, &b_cp_vtxX);
+  tree[0]->SetBranchAddress("cp_vtxY", &cp_vtxY, &b_cp_vtxY);
+  tree[0]->SetBranchAddress("cp_vtxZ", &cp_vtxZ, &b_cp_vtxZ);
+
+  // SimVertex positions (not "Secondary" Vertex!)
+  TBranch        *b_nSV = 0;
+  TBranch        *b_sv_posX = 0;
+  TBranch        *b_sv_posY = 0;
+  TBranch        *b_sv_posZ = 0;
+  Int_t           nSV = 0;
+  vector<double>        *sv_posX = 0;
+  vector<double>        *sv_posY = 0;
+  vector<double>        *sv_posZ = 0;
+  tree[0]->SetBranchAddress("nSV", &nSV, &b_nSV);
+  tree[0]->SetBranchAddress("sv_posX", &sv_posX, &b_sv_posX);
+  tree[0]->SetBranchAddress("sv_posY", &sv_posY, &b_sv_posY);
+  tree[0]->SetBranchAddress("sv_posZ", &sv_posZ, &b_sv_posZ);
 
   TBranch        *b_nTS[nIter];
   TBranch        *b_ts_energy[nIter];
@@ -427,7 +458,7 @@ void fillRecoTree(std::string filePath,
   
   for (unsigned iE(0); iE < nEntries; ++iE){//loop on entries
     Long64_t ientry = treeLC->LoadTree(iE); 
-    if (iE%100==0)
+    if (iE%1==0)
       std::cout << " -- Processing entry " << iE  << " " << ientry << std::endl;
     treeLC->GetEntry(iE);
     
@@ -539,6 +570,25 @@ void fillRecoTree(std::string filePath,
       deltaXCP12 = cp12_dx;
       deltaYCP12 = cp12_dy;
       deltaXYCP12 = cp12_dr;
+
+//      auto doDistance = [](const simVertexRVec & v) {
+//	auto distanceV = v[0].position()-v[1].position();
+//	float distance = ceilf(distanceV.P() * 100)/100;
+//	return distance;
+//      };
+
+      // Distance between first two SimVertices
+      float sv12_posX = (*sv_posX)[0] - (*sv_posX)[1];
+      float sv12_posY = (*sv_posY)[0] - (*sv_posY)[1];
+      float sv12_posZ = (*sv_posZ)[0] - (*sv_posZ)[1];
+      dist_2d = std::sqrt( sv12_posX*sv12_posX + sv12_posY*sv12_posY );
+      dist_3d = std::sqrt( dist_2d* dist_2d + sv12_posZ*sv12_posZ );
+
+      float cp12_vtxX = (*cp_vtxX)[0] - (*cp_vtxX)[1];
+      float cp12_vtxY = (*cp_vtxY)[0] - (*cp_vtxY)[1];
+      float cp12_vtxZ = (*cp_vtxZ)[0] - (*cp_vtxZ)[1];
+      dist_old_2d = std::sqrt( cp12_vtxX*cp12_vtxX + cp12_vtxY*cp12_vtxY );
+      dist_old_3d = std::sqrt( dist_old_2d* dist_old_2d + cp12_vtxZ*cp12_vtxZ );
 
 //      std::cout << "DELTA: " << std::endl
 //		<< " cp1_theta: " << cp1_theta << std::endl
@@ -813,7 +863,7 @@ int slim(){
     std::cout << " -- Processing region " << reg[iReg] << std::endl;
     
     //@@ double ptval[12] = {3,5,10,15,20,30,40,50,75,100,150,200};
-    double ptval[1] = {200};//@@{50};
+    double ptval[1] = {50};
     const unsigned nPT = doDebug ? 1 : iReg==4 ? 7 : 12;
     if (iReg==4 || iReg==5){
       ptval[1] = 10;
@@ -830,7 +880,7 @@ int slim(){
     if (iReg!=0) etaval[0] = 21;
     
     if (doDebug) {
-      ptval[0] = 200;//@@50;
+      ptval[0] = 50;
       etaval[0] = 21;
     }
     
