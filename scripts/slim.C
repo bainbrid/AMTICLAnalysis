@@ -24,7 +24,7 @@
 #include "TGaxis.h"
 #include "TString.h"
 
-#include "globalVars.h"
+#include "../globalVars.h"
 
 struct myTSsort{
   double E;
@@ -852,7 +852,7 @@ int slim(){
   //std::string filePath = "D49_FineCalo_AMiters";
   //std::string filePath = "D49_DevMaxMiss";
   //@@std::string filePath = "D49_DefSC";
-  std::string filePath = "../TiCLTreeProducer/D49_FineCalo";
+  std::string filePath = "../../TiCLTreeProducer/test/D49_FineCalo";
   
   //@@const unsigned regIdx[5] = {0,1,4,5,6};
   const unsigned regIdx[1] = {0};
