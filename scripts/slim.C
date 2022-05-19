@@ -266,7 +266,7 @@ void fillRecoTree(std::string filePath,
     else tree[iC] = new TChain(("ticlTree/TSTree_"+AMiters[iC]).c_str());
 
     //@@const unsigned nRuns = 10;
-    const unsigned nRuns = 4;
+    const unsigned nRuns = 10;
     for (unsigned iRun(0); iRun<nRuns; ++iRun){
       std::ostringstream label;
       label << filePath << "/" << reg[iR] << "/";
@@ -348,14 +348,17 @@ void fillRecoTree(std::string filePath,
   TBranch        *b_sv_posX = 0;
   TBranch        *b_sv_posY = 0;
   TBranch        *b_sv_posZ = 0;
+  TBranch        *b_sv_pos_3d = 0;
   Int_t           nSV = 0;
   vector<double>        *sv_posX = 0;
   vector<double>        *sv_posY = 0;
   vector<double>        *sv_posZ = 0;
+  double          sv_pos_3d = -1.;
   tree[0]->SetBranchAddress("nSV", &nSV, &b_nSV);
   tree[0]->SetBranchAddress("sv_posX", &sv_posX, &b_sv_posX);
   tree[0]->SetBranchAddress("sv_posY", &sv_posY, &b_sv_posY);
   tree[0]->SetBranchAddress("sv_posZ", &sv_posZ, &b_sv_posZ);
+  tree[0]->SetBranchAddress("sv_pos_3d", &sv_pos_3d, &b_sv_pos_3d);
 
   TBranch        *b_nTS[nIter];
   TBranch        *b_ts_energy[nIter];
@@ -531,79 +534,6 @@ void fillRecoTree(std::string filePath,
       maxwDeltaRseed[iL] = 0;
       maxDeltaR[iL] = 0;
       maxDeltaRseed[iL] = 0;
-    }
-
-    deltaPhiCP12 = -1;
-    deltaEtaCP12 = -1;
-    deltaRCP12 = -1;
-    deltaXCP12 = -1;
-    deltaYCP12 = -1;
-    deltaXYCP12 = -1;
-    if ( nCP > 1 ) {
-      deltaPhiCP12 = abs(deltaPhi((*cp_phi)[0],(*cp_phi)[1]));
-      deltaEtaCP12 = abs(deltaEta((*cp_eta)[0],(*cp_eta)[1]));
-      deltaRCP12 = deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1]);
-//      std::cout << "DELTA: " << std::endl
-//		<< " dP: " << deltaPhi((*cp_phi)[0],(*cp_phi)[1]) << std::endl
-//		<< " dE: " << deltaEta((*cp_eta)[0],(*cp_eta)[1]) << std::endl
-//		<< " dR: " << deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1]) << std::endl;
-
-      // photons are "PV pointing", uncharged, massless 
-      // no need to extrapolate momentum vector to ECAL surface
-      // simply convert eta / phi 
-      float tmp_theta = (180./3.141)*2.*std::atan(std::exp(-2.44));
-      float cp1_theta = 2.*std::atan(std::exp(-1.*(*cp_eta)[0]));
-      float cp2_theta = 2.*std::atan(std::exp(-1.*(*cp_eta)[1]));
-      float cp1_phi = (*cp_phi)[0];
-      float cp2_phi = (*cp_phi)[1];
-      float cp1_z = 320.;
-      float cp2_z = 320.;
-      float cp1_r = std::tan(cp1_theta)*cp1_z;
-      float cp2_r = std::tan(cp2_theta)*cp2_z;
-      float cp1_x = std::cos(cp1_phi)*cp1_r;
-      float cp2_x = std::cos(cp2_phi)*cp2_r;
-      float cp1_y = std::sin(cp1_phi)*cp1_r;
-      float cp2_y = std::sin(cp2_phi)*cp2_r;
-      float cp12_dx = cp1_x-cp2_x;
-      float cp12_dy = cp1_y-cp2_y;
-      float cp12_dr = std::sqrt(cp12_dx*cp12_dx+cp12_dy*cp12_dy);
-      deltaXCP12 = cp12_dx;
-      deltaYCP12 = cp12_dy;
-      deltaXYCP12 = cp12_dr;
-
-//      auto doDistance = [](const simVertexRVec & v) {
-//	auto distanceV = v[0].position()-v[1].position();
-//	float distance = ceilf(distanceV.P() * 100)/100;
-//	return distance;
-//      };
-
-      // Distance between first two SimVertices
-      float sv12_posX = (*sv_posX)[0] - (*sv_posX)[1];
-      float sv12_posY = (*sv_posY)[0] - (*sv_posY)[1];
-      float sv12_posZ = (*sv_posZ)[0] - (*sv_posZ)[1];
-      dist_2d = std::sqrt( sv12_posX*sv12_posX + sv12_posY*sv12_posY );
-      dist_3d = std::sqrt( dist_2d* dist_2d + sv12_posZ*sv12_posZ );
-
-      float cp12_vtxX = (*cp_vtxX)[0] - (*cp_vtxX)[1];
-      float cp12_vtxY = (*cp_vtxY)[0] - (*cp_vtxY)[1];
-      float cp12_vtxZ = (*cp_vtxZ)[0] - (*cp_vtxZ)[1];
-      dist_old_2d = std::sqrt( cp12_vtxX*cp12_vtxX + cp12_vtxY*cp12_vtxY );
-      dist_old_3d = std::sqrt( dist_old_2d* dist_old_2d + cp12_vtxZ*cp12_vtxZ );
-
-//      std::cout << "DELTA: " << std::endl
-//		<< " cp1_theta: " << cp1_theta << std::endl
-//		<< " cp2_theta: " << cp2_theta << std::endl
-//		<< " cp1_phi:   " << cp1_phi << std::endl
-//		<< " cp2_phi:   " << cp2_phi << std::endl
-//		<< " cp1_z:     " << cp1_z << std::endl
-//		<< " cp2_z:     " << cp2_z << std::endl
-//		<< " cp1_x:     " << cp1_x << std::endl
-//		<< " cp2_x:     " << cp2_x << std::endl
-//		<< " cp1_y:     " << cp1_y << std::endl
-//		<< " cp2_y:     " << cp2_y << std::endl
-//		<< " cp12_dx:   " << cp12_dx << std::endl
-//		<< " cp12_dy:   " << cp12_dy << std::endl
-//		<< " cp12_dr:   " << cp12_dr << std::endl;
     }
     
     std::map<int,int> lSimLC;
@@ -784,6 +714,78 @@ void fillRecoTree(std::string filePath,
       }
     }
 
+    deltaPhiCP12 = -1;
+    deltaEtaCP12 = -1;
+    deltaRCP12 = -1;
+    deltaXCP12 = -1;
+    deltaYCP12 = -1;
+    deltaXYCP12 = -1;
+    if ( nCP > 1 ) {
+      deltaPhiCP12 = abs(deltaPhi((*cp_phi)[0],(*cp_phi)[1]));
+      deltaEtaCP12 = abs(deltaEta((*cp_eta)[0],(*cp_eta)[1]));
+      deltaRCP12 = deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1]);
+//      std::cout << "DELTA: " << std::endl
+//		<< " dP: " << deltaPhi((*cp_phi)[0],(*cp_phi)[1]) << std::endl
+//		<< " dE: " << deltaEta((*cp_eta)[0],(*cp_eta)[1]) << std::endl
+//		<< " dR: " << deltaR((*cp_eta)[0],(*cp_eta)[1],(*cp_phi)[0],(*cp_phi)[1]) << std::endl;
+
+      // photons are "PV pointing", uncharged, massless 
+      // no need to extrapolate momentum vector to ECAL surface
+      // simply convert eta / phi 
+      float tmp_theta = (180./3.141)*2.*std::atan(std::exp(-2.44));
+      float cp1_theta = 2.*std::atan(std::exp(-1.*(*cp_eta)[0]));
+      float cp2_theta = 2.*std::atan(std::exp(-1.*(*cp_eta)[1]));
+      float cp1_phi = (*cp_phi)[0];
+      float cp2_phi = (*cp_phi)[1];
+      float cp1_z = 320.;
+      float cp2_z = 320.;
+      float cp1_r = std::tan(cp1_theta)*cp1_z;
+      float cp2_r = std::tan(cp2_theta)*cp2_z;
+      float cp1_x = std::cos(cp1_phi)*cp1_r;
+      float cp2_x = std::cos(cp2_phi)*cp2_r;
+      float cp1_y = std::sin(cp1_phi)*cp1_r;
+      float cp2_y = std::sin(cp2_phi)*cp2_r;
+      float cp12_dx = cp1_x-cp2_x;
+      float cp12_dy = cp1_y-cp2_y;
+      float cp12_dr = std::sqrt(cp12_dx*cp12_dx+cp12_dy*cp12_dy);
+      deltaXCP12 = cp12_dx;
+      deltaYCP12 = cp12_dy;
+      deltaXYCP12 = cp12_dr;
+
+//      auto doDistance = [](const simVertexRVec & v) {
+//	auto distanceV = v[0].position()-v[1].position();
+//	float distance = ceilf(distanceV.P() * 100)/100;
+//	return distance;
+//      };
+
+      // Distance between first two SimVertices
+      float sv12_posX = (*sv_posX)[0] - (*sv_posX)[1];
+      float sv12_posY = (*sv_posY)[0] - (*sv_posY)[1];
+      float sv12_posZ = (*sv_posZ)[0] - (*sv_posZ)[1];
+      dist_2d = std::sqrt( sv12_posX*sv12_posX + sv12_posY*sv12_posY );
+      dist_3d = sv_pos_3d;//std::sqrt( dist_2d* dist_2d + sv12_posZ*sv12_posZ );
+
+      float cp12_vtxX = (*cp_vtxX)[0] - (*cp_vtxX)[1];
+      float cp12_vtxY = (*cp_vtxY)[0] - (*cp_vtxY)[1];
+      float cp12_vtxZ = (*cp_vtxZ)[0] - (*cp_vtxZ)[1];
+      dist_old_2d = std::sqrt( cp12_vtxX*cp12_vtxX + cp12_vtxY*cp12_vtxY );
+      dist_old_3d = std::ceil(sv_pos_3d * 100.)/100.;
+
+//      std::cout << "DELTA: " << std::endl
+//		<< " cp1_theta: " << cp1_theta << std::endl
+//		<< " cp2_theta: " << cp2_theta << std::endl
+//		<< " cp1_phi:   " << cp1_phi << std::endl
+//		<< " cp2_phi:   " << cp2_phi << std::endl
+//		<< " cp1_z:     " << cp1_z << std::endl
+//		<< " cp2_z:     " << cp2_z << std::endl
+//		<< " cp1_x:     " << cp1_x << std::endl
+//		<< " cp2_x:     " << cp2_x << std::endl
+//		<< " cp1_y:     " << cp1_y << std::endl
+//		<< " cp2_y:     " << cp2_y << std::endl
+//		<< " cp12_dx:   " << cp12_dx << std::endl
+//		<< " cp12_dy:   " << cp12_dy << std::endl
+//		<< " cp12_dr:   " << cp12_dr << std::endl;
+    }
     
     newTree->Fill();
     
